@@ -1,5 +1,6 @@
 #ifndef KATAM3DS_PLATFORM_H
 #define KATAM3DS_PLATFORM_H
+#include <3ds.h>
 #include <stdbool.h>
 #include <stdint.h>
 typedef struct { uint32_t held, down, up; } K3D_Input;
