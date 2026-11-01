@@ -24,7 +24,7 @@ bool K3D_Init(void)
         if (text_buf != NULL)
             C2D_TextBufDelete(text_buf);
         if (top_target != NULL)
-            C2D_TargetDelete(top_target);
+            C3D_RenderTargetDelete(top_target);
         C2D_Fini();
         C3D_Fini();
         gfxExit();
@@ -43,7 +43,7 @@ void K3D_Shutdown(void)
         text_buf = NULL;
     }
     if (top_target != NULL) {
-        C2D_TargetDelete(top_target);
+        C3D_RenderTargetDelete(top_target);
         top_target = NULL;
     }
 
