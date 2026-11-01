@@ -11,28 +11,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: devkitpro/devkitarm
+      image: devkitpro/devkitarm:latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install 3DS libraries
-        run: |
-          dkp-pacman -Sy --noconfirm 3ds-dev
-          test -f "$DEVKITPRO/libctru/include/3ds.h"
-      - name: Configure devkitARM environment
+      - name: Verify devkitPro 3DS SDK
         shell: bash
         run: |
-          export DEVKITPRO="${DEVKITPRO:-/opt/devkitpro}"
-          export DEVKITARM="${DEVKITARM:-$DEVKITPRO/devkitARM}"
-          echo "$DEVKITARM/bin" >> "$GITHUB_PATH"
-          echo "$DEVKITPRO/tools/bin" >> "$GITHUB_PATH"
+          echo "DEVKITPRO=${DEVKITPRO}"
+          echo "DEVKITARM=${DEVKITARM}"
           test -x "$DEVKITARM/bin/arm-none-eabi-gcc"
+          test -f "$DEVKITPRO/libctru/include/3ds.h"
+          test -f "$DEVKITPRO/libctru/lib/libctru.a"
           "$DEVKITARM/bin/arm-none-eabi-gcc" --version
       - name: Build 3DS smoke-test target
-        run: |
-          export DEVKITPRO="${DEVKITPRO:-/opt/devkitpro}"
-          export DEVKITARM="${DEVKITARM:-$DEVKITPRO/devkitARM}"
-          export PATH="$DEVKITARM/bin:$DEVKITPRO/tools/bin:$PATH"
-          make -C port/3ds -j"$(nproc)"
+        run: make -C port/3ds -j"$(nproc)"
       - uses: actions/upload-artifact@v4
         with:
           name: katam3ds-port-smoke-test
