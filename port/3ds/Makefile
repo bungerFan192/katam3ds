@@ -17,7 +17,7 @@ CFLAGS := -g -Wall -O2 -mword-relocations -ffunction-sections $(ARCH) \
 LDFLAGS := -specs=3dsx.specs -g $(ARCH) \
            -L$(CTRULIB)/lib -L$(PORTLIBS)/lib \
            -Wl,-Map,$(TARGET).map
-LIBS := -lcitro2d -lcitro3d -lctru
+LIBS := -lcitro2d -lcitro3d -lctru -lm
 
 .PHONY: all clean
 all: $(TARGET).3dsx
