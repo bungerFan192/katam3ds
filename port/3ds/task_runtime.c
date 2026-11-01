@@ -59,42 +59,40 @@ void KatamTask_Destroy(KatamTaskRuntime *runtime, KatamTask *task)
 
 void KatamTaskRuntime_Update(KatamTaskRuntime *runtime)
 {
-    size_t rank, i;
+    KatamTask *ordered[KATAM3DS_TASK_CAPACITY];
+    size_t count = 0;
+    size_t i, j;
+
     if (runtime == NULL || runtime->iterating)
         return;
 
-    runtime->iterating = true;
-    /* Stable priority order without allocating or moving task slots. */
-    for (rank = 0; rank < KATAM3DS_TASK_CAPACITY; ++rank) {
-        KatamTask *best = NULL;
-        for (i = 0; i < KATAM3DS_TASK_CAPACITY; ++i) {
-            KatamTask *candidate = &runtime->slots[i];
-            size_t j;
-            bool already_passed = false;
-            if (!candidate->active || candidate->pending_destroy)
-                continue;
-            for (j = 0; j < rank; ++j) {
-                /* Count lower-priority tasks already selected by rank. */
-                (void)j;
-            }
-            if (best == NULL || candidate->priority < best->priority)
-                best = candidate;
-        }
-        if (best == NULL)
-            break;
-        /* Mark this slot for this update using pending_destroy's separate bit
-           is not safe: callbacks may destroy themselves. Iterate slot order in
-           the compatibility runtime; priority sorting is added with adapter. */
-        break;
-    }
-
+    /* Snapshot active tasks, then stable-sort by ascending priority. */
     for (i = 0; i < KATAM3DS_TASK_CAPACITY; ++i) {
         KatamTask *task = &runtime->slots[i];
+        if (task->active && !task->pending_destroy)
+            ordered[count++] = task;
+    }
+
+    for (i = 1; i < count; ++i) {
+        KatamTask *key = ordered[i];
+        j = i;
+        while (j > 0 && ordered[j - 1]->priority > key->priority) {
+            ordered[j] = ordered[j - 1];
+            --j;
+        }
+        ordered[j] = key;
+    }
+
+    runtime->iterating = true;
+    for (i = 0; i < count; ++i) {
+        KatamTask *task = ordered[i];
+        /* A previous callback may have destroyed this task. */
         if (task->active && !task->pending_destroy && task->main != NULL)
             task->main(task, task->user);
     }
     runtime->iterating = false;
 
+    /* Destruction is deferred until iteration has finished. */
     for (i = 0; i < KATAM3DS_TASK_CAPACITY; ++i) {
         KatamTask *task = &runtime->slots[i];
         if (task->active && task->pending_destroy) {
