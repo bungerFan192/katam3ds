@@ -1,0 +1,30 @@
+name: 3DS port build
+on:
+  push:
+    branches: [3ds-port-foundation, master]
+    paths: ['port/3ds/**', '.github/workflows/3ds-port.yml']
+  pull_request:
+    paths: ['port/3ds/**', '.github/workflows/3ds-port.yml']
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install devkitPro 3DS toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl
+          curl -L https://github.com/devkitPro/pacman/releases/latest/download/devkitpro-pacman.deb -o /tmp/devkitpro-pacman.deb
+          sudo apt-get install -y /tmp/devkitpro-pacman.deb
+          sudo dkp-pacman -Syu --noconfirm
+          sudo dkp-pacman -S --noconfirm 3ds-dev
+      - name: Build 3DS smoke-test target
+        shell: bash
+        run: |
+          source /etc/profile.d/devkit-env.sh
+          make -C port/3ds
+      - uses: actions/upload-artifact@v4
+        with:
+          name: katam3ds-port-smoke-test
+          path: port/3ds/katam3ds-port.3dsx
