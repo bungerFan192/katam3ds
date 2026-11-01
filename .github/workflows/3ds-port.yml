@@ -14,6 +14,10 @@ jobs:
       image: devkitpro/devkitarm
     steps:
       - uses: actions/checkout@v4
+      - name: Install 3DS libraries
+        run: |
+          dkp-pacman -Sy --noconfirm 3ds-dev
+          test -f "$DEVKITPRO/libctru/include/3ds.h"
       - name: Configure devkitARM environment
         shell: bash
         run: |
