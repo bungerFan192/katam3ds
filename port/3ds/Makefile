@@ -1,17 +1,22 @@
 # Standalone smoke-test target; does not yet compile the original game sources.
 .SUFFIXES:
 TARGET := katam3ds-port
-BUILD := build
-SOURCES := .
-INCLUDES := -I.
 CFILES := main.c platform.c task_runtime.c
 OBJS := $(CFILES:.c=.o)
 
-# Do not rely on the host's default CC (often /usr/bin/cc in CI).
-CC := arm-none-eabi-gcc
+DEVKITPRO ?= /opt/devkitpro
+DEVKITARM ?= $(DEVKITPRO)/devkitARM
+CC := $(DEVKITARM)/bin/arm-none-eabi-gcc
+
 ARCH := -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft
-CFLAGS := -g -Wall -O2 -mword-relocations -ffunction-sections $(ARCH) $(INCLUDES)
-LDFLAGS := -specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(TARGET).map
+CTRULIB := $(DEVKITPRO)/libctru
+PORTLIBS := $(DEVKITPRO)/portlibs/3ds
+
+CFLAGS := -g -Wall -O2 -mword-relocations -ffunction-sections $(ARCH) \
+          -D__3DS__ -I. -I$(CTRULIB)/include -I$(PORTLIBS)/include
+LDFLAGS := -specs=3dsx.specs -g $(ARCH) \
+           -L$(CTRULIB)/lib -L$(PORTLIBS)/lib \
+           -Wl,-Map,$(TARGET).map
 LIBS := -lcitro2d -lcitro3d -lctru
 
 .PHONY: all clean
