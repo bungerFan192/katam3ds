@@ -5,6 +5,7 @@
 #include "random.h"
 #include "code_0806F780.h"
 #include "sir_kibble.h"
+#include "hot_head.h"
 #include "constants/kirby.h"
 
 static void sub_08023910(struct Task *);
@@ -113,7 +114,7 @@ static void sub_08023990(struct Object *sk)
     sk->base.flags |= 4;
     if (!(sk->kirby3->base.unkC & 0x8000)
         && sk->base.roomId == sk->kirby3->base.roomId
-        && Macro_08039430_1(&sk->kirby3->base, sk))
+        && ObjectOriginOverlapsRectAtObject(&sk->kirby3->base, sk))
     {
         Macro_081003EC(sk, &sk->kirby3->base);
         sub_08024FE4(sk);
