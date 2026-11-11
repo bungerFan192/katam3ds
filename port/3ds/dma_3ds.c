@@ -44,8 +44,6 @@ static size_t Flush(K3D_DMA_Timing timing, size_t budget, int one_only)
             if (item.size <= budget - copied) {
                 memmove(item.destination, item.source, item.size);
                 copied += item.size;
-                if (one_only)
-                    one_only = 0;
                 continue;
             }
             /* Do not overtake an earlier transfer of the same timing class. */
