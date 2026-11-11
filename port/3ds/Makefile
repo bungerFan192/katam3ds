@@ -3,7 +3,7 @@
 .SUFFIXES:
 TARGET := katam3ds-port
 CFILES := main.c platform.c task_runtime.c clock_3ds.c save_3ds.c \
-          wireless_3ds.c video_3ds.c audio_3ds.c
+          wireless_3ds.c video_3ds.c audio_3ds.c dma_3ds.c
 OBJS := $(CFILES:.c=.o)
 
 DEVKITPRO ?= /opt/devkitpro
