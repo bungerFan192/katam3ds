@@ -1,7 +1,9 @@
-# Standalone smoke-test target; does not yet compile the original game sources.
+# 3DS platform adapter smoke-test target. Original GBA game sources are not
+# linked yet; see README.md for the remaining memory/ABI integration work.
 .SUFFIXES:
 TARGET := katam3ds-port
-CFILES := main.c platform.c task_runtime.c
+CFILES := main.c platform.c task_runtime.c clock_3ds.c save_3ds.c \
+          wireless_3ds.c video_3ds.c audio_3ds.c
 OBJS := $(CFILES:.c=.o)
 
 DEVKITPRO ?= /opt/devkitpro
