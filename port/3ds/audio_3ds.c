@@ -12,6 +12,7 @@ typedef struct {
 
 static K3DAudioBuffer sBuffers[K3D_AUDIO_BUFFERS];
 static int sAudioReady;
+static int sNdspStarted;
 
 int K3D_AudioInit(unsigned sample_rate)
 {
@@ -20,6 +21,7 @@ int K3D_AudioInit(unsigned sample_rate)
         return 1;
     if (ndspInit() != 0)
         return 0;
+    sNdspStarted = 1;
 
     ndspChnReset(K3D_AUDIO_CHANNEL);
     ndspChnSetInterp(K3D_AUDIO_CHANNEL, NDSP_INTERP_LINEAR);
@@ -52,8 +54,9 @@ void K3D_AudioExit(void)
             linearFree(sBuffers[i].samples);
         memset(&sBuffers[i], 0, sizeof(sBuffers[i]));
     }
-    if (sAudioReady)
+    if (sNdspStarted)
         ndspExit();
+    sNdspStarted = 0;
     sAudioReady = 0;
 }
 
