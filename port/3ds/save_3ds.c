@@ -1,6 +1,7 @@
 #include "save_3ds.h"
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #define K3D_SAVE_DIR "sdmc:/3ds/katam3ds/"
 
@@ -12,7 +13,6 @@ static int MakePath(char *out, size_t capacity, const char *name)
     n = strlen(name);
     if (n > capacity - sizeof(K3D_SAVE_DIR))
         return 0;
-    /* Save names are filenames, never paths. */
     for (i = 0; i < n; ++i) {
         unsigned char c = (unsigned char)name[i];
         if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
