@@ -1,7 +1,7 @@
 name: 3DS port build
 on:
   push:
-    branches: [3ds-port-foundation, master]
+    branches: [3ds-port-foundation, 3ds-systems-port, master]
     paths: ['port/3ds/**', '.github/workflows/3ds-port.yml']
   pull_request:
     paths: ['port/3ds/**', '.github/workflows/3ds-port.yml']
